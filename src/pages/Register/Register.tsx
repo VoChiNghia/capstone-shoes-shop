@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useFormik,Form,Formik,Field,FormikHelpers } from "formik";
 import * as yup from "yup";
 import {useDispatch, useSelector} from 'react-redux';
@@ -26,7 +26,12 @@ export default function Register({}: Props) {
   const {registerUser,isLoading} = useSelector((state:RootState) => state.userReducer)
 
   const dispatch:DispatchType = useDispatch()
-
+  useEffect(() => {
+    toast(registerUser && registerUser)
+  
+   
+  }, [registerUser])
+  
   return (
    <motion.div
    initial="initial"
@@ -64,10 +69,10 @@ export default function Register({}: Props) {
 
           const {confirmPassword,...value} = {...values, gender: gender2}
           console.log(value)
-          const action = await registerUserApi(value)
-          await   dispatch(action)
-          await dispatch(isLoadingState(false))
-          alert(registerUser)
+          const action = registerUserApi(value)
+          dispatch(action)
+           dispatch(isLoadingState(false))
+      
           
         }
 
