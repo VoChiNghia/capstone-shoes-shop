@@ -17,7 +17,7 @@ type Props = {}
 
 export default function Home({}: Props) {
  const {arrProduct,isLoading,productPerPage} = useSelector((state:RootState) => state.productSlide)
- console.log(arrProduct)
+
 const {favoriteProduct} = useSelector((state:RootState) => state.userReducer)
 
  const [pageIndex,setPageIndex] = useState<number>(1)

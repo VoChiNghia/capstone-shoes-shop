@@ -21,6 +21,7 @@ export const Navbar = ({ cate }: Prop) => {
       ))
     }else{
       return <>
+      
       <NavLink to={`/listproduct/adidas`}>
           <li className="p-1 text-xs md:text-lg md:p-4 hover:bg-slate-300" >
             ADIDAS
@@ -51,9 +52,15 @@ export const Navbar = ({ cate }: Prop) => {
   }
 
   return (
-    <div className="mx-5 dark:text-white dark:shadow-sm shadow-gray-800 hover:cursor-pointer transition duration-200 flex justify-between items-center">
+    <div className="mx-0 md:mx-5 dark:text-white dark:shadow-sm shadow-gray-800 hover:cursor-pointer transition duration-200 flex justify-between items-center">
       <ul className="flex">
+      <NavLink to={`/`}>
+          <li className="p-1 text-xs md:text-lg md:p-4 hover:bg-slate-300" >
+            HOME
+          </li>
+      </NavLink>
         {
+          
           renderCate()
         }
       </ul>

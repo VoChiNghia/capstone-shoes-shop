@@ -59,7 +59,7 @@ export default function Header({}: Props) {
   };
   return (
     <>
-      <div className="bg-black shadow-sm shadow-gray-600 fixed w-full z-10 text-white flex justify-between py-2 items-center">
+      <div className="bg-black shadow-sm shadow-gray-600 w-full z-10 text-white flex justify-between py-2 items-center">
       <NavLink to='/'> <img className="mx-1 md:mx-5" src="./img/image3.png" alt="" /></NavLink>
        
        <div className="flex items-center">

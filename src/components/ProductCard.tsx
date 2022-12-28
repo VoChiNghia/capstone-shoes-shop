@@ -37,7 +37,7 @@ const ProductCard = ({prod}: Props) => {
         </div>
         <div className="flex justify-between align-center my-5">
             <button className="bg-[#9DE167] dark:bg-violet-800 px-10 py-2 flex-1">Buy now</button>
-            <div className="font-bold flex-1 text-center bg-gray-400 my-auto leading-10">85$</div>
+            <div className="font-bold flex-1 text-center bg-gray-400 my-auto leading-10">{prod.price}$</div>
         </div>
           
         </div>

@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { DispatchType, RootState } from '../../store/store'
 import {useFormik} from 'formik'
-import { getFavoriteProductApi, getProfileAsynsApi, OrdersHistory } from '../../redux/configStore/userReducer'
+import { getFavoriteProductApi, getProfileAsynsApi, OrdersHistory, updateUserApi, UserLoginResult } from '../../redux/configStore/userReducer'
 import {motion} from 'framer-motion'
 import {pageMotion} from '../../util/motion'
 import OrderCard from '../../components/OrderCard'
@@ -10,6 +10,10 @@ import Pagination from '../../components/Pagination'
 import _ from 'lodash'
 import { NavLink } from 'react-router-dom'
 import { AiFillHeart } from 'react-icons/ai'
+import * as yup from "yup";
+import { UserRegister } from '../Register/Register'
+import { ToastContainer, toast } from 'react-toastify'
+import { USER_LOGIN, getStore, getStoreJson } from '../../util/config'
 
 type Props = {}
 
@@ -17,25 +21,64 @@ export default function Profile({}: Props) {
   const {userProfile,favoriteProduct} = useSelector((state:RootState) => state.userReducer)
 
 
-
+  const dispatch:DispatchType = useDispatch()
   const newUserProfile = userProfile?.ordersHistory.filter(item => item.orderDetail.length != 0)
 
   const [currentPage,setCurrentPage] = useState<number>(1)
   const [postPerPage,setpostPerPage] = useState<number>(2)
 
+
   const lastPostIndex = currentPage * postPerPage
   const firstPostIndex = lastPostIndex - postPerPage
+  const user:UserLoginResult = getStoreJson('userLogin')
+  
+  const formUserProfile = useFormik<UserRegister>({
+    initialValues:{
+      email:    '',
+      password: '',
+      name:     '',
+      gender:   true,
+      phone:    '',
+    },
+    validationSchema: yup.object().shape({
+        email: yup.string().email( ),
+        password: yup.string().required().min(3,'must be at least 3 charator'),
+        name: yup.string().required(),
+        phone: yup.string().required(),
+      }),
+      onSubmit:(values:UserRegister) =>{
+          if(user.email === values.email){
+            let action:UserRegister = values
+            if( typeof values.gender == 'string'){
+            if(values.gender === '0'){
+            action = {...values, gender:false}
+            } else{
+            action = {...values, gender: true}
+            }
+            }
 
 
-  const dispatch:DispatchType = useDispatch()
-  const formUserProfile = useFormik({
-    initialValues:{},
-    onSubmit:(value:any) => {
+             dispatch(updateUserApi(action))
+             toast.success("Update Successfullu")
+          }else{
+            toast.error("Update fail")
+          }
+       
 
-    }
+
+        
+        
+       
+       
+      
+       
+    
+        
+        }
+    
   })
 
-  
+
   useEffect(() => {
       const profileActiion = getProfileAsynsApi()
       const favoriteAction = getFavoriteProductApi()
@@ -69,32 +112,36 @@ export default function Profile({}: Props) {
           <img src={userProfile?.avatar} className="rounded-full w-15 p-5" alt="" />
         </div>
         <div className="flex-grow">
-          <form>
+          <form onSubmit={formUserProfile.handleSubmit}>
             <div className="grid md:grid-cols-12 grid-cols-1">
               <div className="col-span-6">
                 <div className="form-group m-10">
                   <p>Email</p>
-                  <input className="input dark:bg-gray-600/30 border-none " type="text" name="email" placeholder="Emai..." value={userProfile?.email} onChange={formUserProfile.handleChange}/>
+                  <input className="input dark:bg-gray-600/30 border-none " type="text" name="email" placeholder={userProfile?.email} onChange={formUserProfile.handleChange}/>
+                  {formUserProfile.errors.email && <p className="text-red-600 text-xs">{formUserProfile.errors.email}</p>}
                 </div>
                 <div className="form-group m-10">
                   <p>Phone</p>
-                  <input className="input dark:bg-gray-600/30 border-none" type="text" name="phone" placeholder="Phone..." value={userProfile?.phone} onChange={formUserProfile.handleChange}/>
+                  <input className="input dark:bg-gray-600/30 border-none" type="text" name="phone" placeholder={userProfile?.phone} onChange={formUserProfile.handleChange}/>
+                  {formUserProfile.errors.phone && <p className="text-red-600 text-xs">{formUserProfile.errors.phone}</p>}
                 </div>
               </div>
               <div className="col-span-6">
               <div className="form-group m-10">
                   <p>Name</p>
-                  <input className="input dark:bg-gray-600/30 border-none" type="text" name="name" placeholder="Name..." value={userProfile?.name} onChange={formUserProfile.handleChange}/>
+                  <input className="input dark:bg-gray-600/30 border-none" type="text" name="name" placeholder={userProfile?.name} onChange={formUserProfile.handleChange}/>
+                  {formUserProfile.errors.name && <p className="text-red-600 text-xs">{formUserProfile.errors.name}</p>}
                 </div>
                 <div className="form-group m-10">
                   <p>Password</p>
-                  <input className="input dark:bg-gray-600/30 border-none" type="password" name="password" placeholder="password..." value="*******" onChange={formUserProfile.handleChange}/>
+                  <input className="input dark:bg-gray-600/30 border-none" type="password" name="password" placeholder="password..." onChange={formUserProfile.handleChange}/>
+                  
                 </div>
                 <div className="form-group m-10">
                 <div className="my-2">
                   <p>Gender</p>
-                  <input type="radio" name="gender"/>Male
-                  <input type="radio" name="gender"/>Female
+                  <input type="radio" name="gender" value='1' onChange={formUserProfile.handleChange}/>Male
+                  <input type="radio" name="gender" value='0' onChange={formUserProfile.handleChange}/>Female
                   </div>
                   <div>
                     <button type="submit" className="button"> Update </button>
@@ -108,7 +155,7 @@ export default function Profile({}: Props) {
         </div>
       </div>
       <hr />
-
+        <ToastContainer position="bottom-right"/>
       <div className="m-2 md:m-12">
         <div className="flex">
           <h1 className=" text-sm md:text-4xl border-r-2 border-b-2 px-4 md:px-10 pb-1 border-l-2 cursor-pointer history orderHistoryActive" onClick={(e) => handleClick(e,'history-content')}>Orders History</h1>

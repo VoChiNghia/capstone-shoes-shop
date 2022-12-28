@@ -1,10 +1,12 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 
-import { Dispatch } from 'react';
+
 import { history } from '../..';
 import { UserRegister } from '../../pages/Register/Register';
 import { DispatchType } from '../../store/store';
 import { ACCESS_TOKEN, getStore, getStoreJson, http, saveStore, saveStoreJson, USER_LOGIN } from '../../util/config';
+import { useDispatch } from 'react-redux';
+
 
 
 export interface FavoriteProductModel {
@@ -62,13 +64,14 @@ export type UserLoginModel = {
     password: string
 }
 export interface UserState {
-    userLogin: UserLoginResult,
+    userLogin: UserLoginResult | null
     userProfile:UserProfile | null,
     registerUser:string | null
     favoriteProduct:FavoriteProductModel | null
     like:string,
     submitOrder:string,
-    isLoading:boolean
+    isLoading:boolean,
+    updateProfile:string
 }
 const initialState:UserState = {
     userLogin: getStoreJson(USER_LOGIN) ? getStoreJson(USER_LOGIN) : null,
@@ -77,7 +80,8 @@ const initialState:UserState = {
     favoriteProduct:null,
     like:'',
     submitOrder:'',
-    isLoading:false
+    isLoading:false,
+    updateProfile:''
 }
 
 const  userReducer = createSlice({
@@ -98,35 +102,64 @@ const  userReducer = createSlice({
     },
     isLoadingState:(state:UserState,action:PayloadAction<boolean>)=>{
         state.isLoading = action.payload
+    },
+    updateProfileState:(state:UserState,action:PayloadAction<string>)=>{
+        state.updateProfile = action.payload
     }
 
   },
   extraReducers(builder){
+    builder.addCase(loginAsyncApit.pending,(state:UserState)=>{
+        state.isLoading = true
+    })
     builder.addCase(loginAsyncApit.fulfilled,(state:UserState, action:PayloadAction<UserLoginResult>) => {
             state.userLogin = action.payload
             saveStoreJson(USER_LOGIN,action.payload)
             saveStore(ACCESS_TOKEN,action.payload.accessToken)
             history.push('/ ')
+            if(action.payload.email === ''){
+                history.push('/login')
+            }
+          
             
     });
+    builder.addCase(loginAsyncApiFb.fulfilled,(state:UserState, action:PayloadAction<UserLoginResult>)=>{
+        state.userLogin = action.payload
+        saveStoreJson(USER_LOGIN,action.payload)
+        saveStore(ACCESS_TOKEN,action.payload.accessToken)
+        history.push('/ ')
+    })
     builder.addCase(getProfileAsynsApi.fulfilled,(state:UserState, action:PayloadAction<UserProfile>) => {
         state.userProfile = action.payload
     })
+
+    
   }
 });
 
-export const { registerState,favoriteProdcutState,likeState,submitOrderState,isLoadingState } =  userReducer.actions
+export const { registerState,favoriteProdcutState,likeState,submitOrderState,isLoadingState,updateProfileState } =  userReducer.actions
 
 export default  userReducer.reducer
 
 
 
-
+// Signin
 export const loginAsyncApit = createAsyncThunk('userReducer/login',async (dataUser:UserLoginModel):Promise<UserLoginResult> => {
+       
         const respones = await http.post('/api/Users/signin',dataUser)
         return respones.data.content
     }
 )
+export const loginAsyncApiFb = createAsyncThunk('userReducer/loginfb',async (dataUser:string):Promise<UserLoginResult> => {
+       let data:any = {
+        facebookToken:dataUser
+       }
+    const respones = await http.post('/api/Users/facebooklogin',data)
+    console.log(respones.data.content) 
+    return respones.data.content
+}
+)
+
 
 export const getProfileAsynsApi = createAsyncThunk('userReducer/getProfile',async ():Promise<UserProfile> => {
     const respones = await http.post('/api/Users/getProfile')
@@ -189,3 +222,20 @@ export const submitOrderApi = (prodOrder:Order[],email:string) =>{
     }
   }
 
+
+  // update profile
+
+  export const updateUserApi = (data:UserRegister) => {
+
+    return async (dispatch: DispatchType)=> {
+       try {
+        await dispatch(isLoadingState(true))
+        const response = await http.post('/api/Users/updateProfile',data)
+        const action = updateProfileState(response.data.content)
+            dispatch(action)  
+       } catch (error:any) {
+        
+              dispatch(updateProfileState(error.response.data.content))
+       }
+    }
+}

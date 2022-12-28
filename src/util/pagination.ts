@@ -44,7 +44,6 @@
         render += renderPage(pos, active);
       }
     }
-    console.log(renderTwoSide)
     if (renderTwoSide) {
       renderTwoSide =
         renderPage(1,"") + dot + renderTwoSide + dot + renderPage(totalPages,"");

@@ -1,4 +1,4 @@
-import React,{useEffect,useRef} from 'react'
+import React,{useEffect,useRef, useState} from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { getSearchResultApi, isLoadingState, ProductDetailModel, ProductModel } from '../../redux/configStore/productSlide'
 import { DispatchType } from '../../store/store'
@@ -14,21 +14,23 @@ type Props = {}
 export default function Search({}: Props) {
   const dispatch:DispatchType = useDispatch()
   const {searchResults,isLoading} = useSelector((state:RootState) => state.productSlide)
-  console.log(isLoading)
+  const [resultsSort,setResultsSort] = useState<ProductDetailModel[] | null>(searchResults)
+  
+
   const searchInput = useRef<string>('')
  
   const handleSearch = async () => {
     const action = getSearchResultApi(searchInput.current);
        await dispatch(action)
         dispatch(isLoadingState(false))
-     
+     setResultsSort(searchResults)
   }  
-  console.log(searchResults)
+
   const renderSearchResult = () => {
    
    return searchResults?.length !== 0 ? <div className="grid sm:grid-cols-2 grid-cols-1 md:grid-cols-3 gap-20 my-10">
     {
-     searchResults?.map((result:ProductDetailModel,index:number) => (
+     resultsSort?.map((result:ProductDetailModel,index:number) => (
        <ProductCard key={index} prod={result}/>
      ))
     }
@@ -39,7 +41,15 @@ export default function Search({}: Props) {
       document.querySelector('.decrease')?.classList.remove('active')
       document.querySelector('.ascending')?.classList.remove('active')
       e.target.classList.add('active')
-      
+      let result:any;
+      if(name == 'decrease'){
+        result = _.sortBy(searchResults,(r)=> r.price)
+          setResultsSort(result)
+      }
+      if(name == 'ascending'){
+        result = _.orderBy(searchResults, ['price'],['asc']).reverse()
+      setResultsSort(result)
+      }
   }
   return (
     <motion.div 

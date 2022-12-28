@@ -17,18 +17,20 @@ export default function Cart({}: Props) {
   const { cartState } = useSelector((state: RootState) => state.cartReducer);
   const {userLogin,submitOrder} = useSelector((state: RootState) => state.userReducer)
   const dispatch: DispatchType = useDispatch();
-  
+ 
   const handleDel = (id: number) => {
     dispatch(cartDel(id));
   };
 
+  
 
   const handerSubmitOrder = () => {
     const cartList = cartState.map(item => _.pick(item, ['id','quantity']))
     const action =  cartList.map(item => ({ "productId":item.id,
     "quantity": item.quantity}))
+    if(typeof userLogin?.email === 'string')
     dispatch(submitOrderApi(action,userLogin.email))
-    if(submitOrder) toast(submitOrder);
+    submitOrder ? toast(submitOrder) : toast("Thêm mới thành công")
   }
   
   return (
@@ -53,9 +55,9 @@ export default function Cart({}: Props) {
             </thead>
             <tbody>
               {cartState.map((item: CartModel, index: number) => (
-                <>
+              
                
-                <tr key={index}>
+                <tr key={index} >
                   
                   <td className="text-center">{index + 1}</td>
                   <td className="text-center">
@@ -84,7 +86,7 @@ export default function Cart({}: Props) {
                     <ToastContainer />
                   </td>
                 </tr>
-                </>
+                
               ))}
             </tbody>
           </table> 

@@ -12,11 +12,11 @@ import "swiper/css/navigation";
 // import required modules
 import { Navigation, Pagination } from "swiper";
 import { ProductModel } from "../redux/configStore/productSlide";
-import { clearScreenDown } from "readline";
-import { NavLink } from "react-router-dom";
+
+
 import {history} from "../index"
 import '../Style/style.css'
-import {GrCaretNext,GrCaretPrevious} from 'react-icons/gr'
+
 
 type Props = {
   arrProduct:ProductModel[]
@@ -27,7 +27,7 @@ const Carousel = ({arrProduct}: Props) => {
     history.push(`/detail/${id}`)
  }
   return (
-    <div className="px-12 dark:bg-zinc-800">
+    <div className="px-12 dark:bg-zinc-800 hidden md:block">
       <Swiper
         spaceBetween={30}
         pagination={{
@@ -40,7 +40,7 @@ const Carousel = ({arrProduct}: Props) => {
       >
         {
           arrProduct.slice(0,4).map((item:ProductModel,index:number) =>(
-            <SwiperSlide >
+            <SwiperSlide key={index}>
               <div className='flex items-center mx-12'>
               
               <div className='flex-1'>
