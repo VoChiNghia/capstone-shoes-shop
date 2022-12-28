@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/react-gh-pages/static/css/main.999df735.css",
+    "main.js": "/react-gh-pages/static/js/main.f8ea80de.js",
+    "static/media/left-arrow-next-svgrepo-com.svg": "/react-gh-pages/static/media/left-arrow-next-svgrepo-com.1eefc0953529b0189d2a.svg",
+    "static/media/right-arrow-next-svgrepo-com.svg": "/react-gh-pages/static/media/right-arrow-next-svgrepo-com.dedc36df0425a039083d.svg",
+    "index.html": "/react-gh-pages/index.html",
+    "main.999df735.css.map": "/react-gh-pages/static/css/main.999df735.css.map",
+    "main.f8ea80de.js.map": "/react-gh-pages/static/js/main.f8ea80de.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.999df735.css",
+    "static/js/main.f8ea80de.js"
+  ]
+}
