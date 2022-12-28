@@ -176,7 +176,7 @@ export const registerUserApi = (data:UserRegister) => {
             dispatch(action)  
        } catch (error:any) {
         console.log(error.response.data.message)
-              dispatch(registerState(error.response.data.message))
+            dispatch(registerState(error.response.data.message))
        }
     }
 }
@@ -188,7 +188,7 @@ export const getFavoriteProductApi = () =>{
     return async (dispatch: DispatchType) => {
       const response = await http.get('/api/Users/getproductfavorite')
       const action = favoriteProdcutState(response.data.content)
-     await dispatch(action)
+      dispatch(action)
     }
   }
 
@@ -198,7 +198,7 @@ export const postLikeProductApi = (id:number) =>{
     return async (dispatch: DispatchType) => {
       const response = await http.get(`/api/Users/like?productId=${id}`)
       const action = likeState(response.data.content)
-      await dispatch(action)
+       dispatch(action)
     }
   }
 
@@ -229,7 +229,7 @@ export const submitOrderApi = (prodOrder:Order[],email:string) =>{
 
     return async (dispatch: DispatchType)=> {
        try {
-        await dispatch(isLoadingState(true))
+        dispatch(isLoadingState(true))
         const response = await http.post('/api/Users/updateProfile',data)
         const action = updateProfileState(response.data.content)
             dispatch(action)  
